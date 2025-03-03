@@ -52,7 +52,7 @@ const ConfirmInvitationPage = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/projects/confirm-invitation/${id}/${roleId}`
       );
-      setProject(response.data);
+      setProject(response.data)
       setLoading(false);
     } catch (err) {
       setError(
