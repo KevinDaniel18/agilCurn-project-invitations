@@ -28,8 +28,6 @@ interface Project {
   }[];
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
 const ConfirmInvitationPage = () => {
   const { id, roleId } = useParams();
   const [loading, setLoading] = useState(true);
@@ -38,21 +36,21 @@ const ConfirmInvitationPage = () => {
 
   useEffect(() => {
     // Only run the confirmation when the id and roleId are available from the URL
+    if (typeof window === "undefined") return;
+
     if (id && roleId) {
+      console.log(id, roleId);
+
       confirmInvitation();
-    } else if (id) {
-      // If roleId is missing, we'll pass a default (Developer = 3)
-      confirmInvitation(3);
     }
   }, [id, roleId]);
 
-  const confirmInvitation = async (defaultRoleId?: number) => {
+  const confirmInvitation = async () => {
     try {
       setLoading(true);
 
-      const roleIdToUse = roleId || defaultRoleId;
       const response = await axios.get(
-        `${API_URL}/projects/confirm-invitation/${id}?roleId=${roleIdToUse}`
+        `${process.env.NEXT_PUBLIC_API_URL}/projects/confirm-invitation/${id}/${roleId}`
       );
       setProject(response.data);
       setLoading(false);
@@ -114,6 +112,13 @@ const ConfirmInvitationPage = () => {
               ))}
             </ul>
           </div>
+
+          <a
+            href="agilcurn://home"
+            className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Open in Mobile App
+          </a>
         </div>
       </div>
     );
