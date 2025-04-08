@@ -29,30 +29,48 @@ interface Project {
 }
 
 const ConfirmInvitationPage = () => {
-  const { id, roleId } = useParams();
+  const params = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
+  const [id, setId] = useState<string | null>(null);
+  const [roleId, setRoleId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only run the confirmation when the id and roleId are available from the URL
-    if (typeof window === "undefined") return;
-
-    if (id && roleId) {
-      console.log(id, roleId);
-
-      confirmInvitation();
+    if (params?.id && params?.roleId) {
+      setId(params.id as string);
+      setRoleId(params.roleId as string);
     }
-  }, [id, roleId]);
+  }, [params]);
 
   const confirmInvitation = async () => {
     try {
       setLoading(true);
 
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      console.log("url", apiUrl);
+      console.log("id", id);
+      console.log("roleId", roleId);
+
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/projects/confirm-invitation/${id}/${roleId}`
+        `${apiUrl}/projects/confirm-invitation/${Number(id)}/${Number(roleId)}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
+
+      console.log("Response tipo:", typeof response.data);
+      console.log("Contenido:", response.data);
+
+      if (typeof response.data !== "object") {
+        throw new Error("Unexpected response type");
+      }
+
       setProject(response.data);
+      console.log("Respuesta del servidor:", response.data);
+
       setLoading(false);
     } catch (err) {
       setError(
@@ -62,6 +80,12 @@ const ConfirmInvitationPage = () => {
       console.error("Error confirming invitation:", err);
     }
   };
+
+  useEffect(() => {
+    if (id && roleId) {
+      confirmInvitation();
+    }
+  }, [id, roleId]);
 
   if (loading) {
     return (
