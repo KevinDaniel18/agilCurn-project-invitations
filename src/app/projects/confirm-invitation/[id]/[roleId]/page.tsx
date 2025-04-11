@@ -61,7 +61,7 @@ const ConfirmInvitationPage = () => {
         }
       );
 
-      console.log("Response tipo:", typeof response.data);
+      console.log("Response tipo", typeof response.data);
       console.log("Contenido:", response.data);
 
       if (typeof response.data !== "object") {
